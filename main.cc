@@ -1,11 +1,12 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <map>
+#include <curses.h>
 
 std::string detectShape(int sides) {
     if (sides == 3) return "Triunghi";
     if (sides == 4) return "Patrulater";
-    if (sides >= 7) return "Cerc";
+    if (sides >= 7 && sides <= 20) return "Cerc";
     return "Necunoscut";
 }
 
@@ -35,7 +36,6 @@ std::string detectColor(cv::Mat& hsv, cv::Point point, std::map<std::string, cv:
         const std::string& colorName = colorPair.first;
         const cv::Scalar& bgrColor = colorPair.second;
 
-        // Ensure the color does not have an alpha channel
         cv::Scalar bgrColorNoAlpha = cv::Scalar(bgrColor[0], bgrColor[1], bgrColor[2]);
 
         cv::Mat bgrMat(1, 1, CV_8UC3, bgrColorNoAlpha);
@@ -78,6 +78,10 @@ int main() {
     {"Mov", cv::Scalar(128, 0, 128)}
     };
 
+    std::map<std::string, int> colorCount;
+    std::map<std::string, int> shapeCount;
+
+
     while (true) {
         cv::Mat frame;
         cap >> frame;
@@ -119,8 +123,19 @@ int main() {
 
                 cv::Point point = contours[i][0];
                 std::string color = detectColor(hsv, point, colorMap);
+                
+                colorCount[color]++;
+                shapeCount[shape]++;
 
-                std::cout << "Detected Color: " << color << std::endl;
+                system("clear");
+
+                for (const auto& pair : colorCount) {
+                    std::cout << pair.first << ": " << pair.second << std::endl;
+                }
+
+                for (const auto& pair : shapeCount) {
+                    std::cout << pair.first << ": " << pair.second << std::endl;
+                }
 
                 cv::putText(frame, shape + ", " + color, contours[i][0], cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 2);
             }
