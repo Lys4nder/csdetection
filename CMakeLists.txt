@@ -11,20 +11,8 @@ set(CMAKE_AUTOMOC ON)
 
 find_package(Threads REQUIRED)
 
-# Find Qt6 components
-find_package(Qt6 COMPONENTS Widgets Core Gui REQUIRED)
-
 # Find OpenCV
 find_package(OpenCV REQUIRED)
-
-
-# Check if Qt6 was found
-if (Qt6_FOUND)
-  message(STATUS "Qt6 was found")
-else()
-  message(FATAL_ERROR "Qt6 was not found")
-endif()
-
 
 # Check if OpenCV was found
 if (OpenCV_FOUND)
@@ -54,8 +42,6 @@ add_executable(${CMAKE_PROJECT_NAME}
 
 # Links the executable against the necessary dependencies
 target_link_libraries(${CMAKE_PROJECT_NAME}
-  Qt6::Widgets
-  Qt6::Core
   ${OpenCV_LIBS}
 )
 
@@ -67,10 +53,5 @@ add_library(${CMAKE_PROJECT_NAME}_lib
 
 # Links the library against the necessary dependencies
 target_link_libraries(${CMAKE_PROJECT_NAME}_lib
-  Qt6::Widgets
-  Qt6::Core
   ${OpenCV_LIBS}
 )
-
-# Adds the test directory
-

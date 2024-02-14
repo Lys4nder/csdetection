@@ -97,17 +97,41 @@ int main() {
         cv::Mat hsv;
         cv::cvtColor(blurred, hsv, cv::COLOR_BGR2HSV);
 
-        cv::Mat mask;
-        cv::inRange(hsv, cv::Scalar(0, 100, 100), cv::Scalar(10, 255, 255), mask);
-        cv::Mat mask2;
-        cv::inRange(hsv, cv::Scalar(160, 100, 100), cv::Scalar(180, 255, 255), mask2);
-        cv::bitwise_or(mask, mask2, mask);
+        cv::Mat mask_red;
+        cv::inRange(hsv, cv::Scalar(0, 100, 100), cv::Scalar(10, 255, 255), mask_red);
+        cv::Mat mask_red2;
+        cv::inRange(hsv, cv::Scalar(160, 100, 100), cv::Scalar(180, 255, 255), mask_red2);
+        //
+        cv::Mat mask_orange;
+        cv::inRange(hsv, cv::Scalar(11, 100, 100), cv::Scalar(25, 255, 255), mask_orange);
 
-        cv::morphologyEx(mask, mask, cv::MORPH_OPEN, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
-        cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
+        cv::Mat mask_yellow;
+        cv::inRange(hsv, cv::Scalar(26, 100, 100), cv::Scalar(35, 255, 255), mask_yellow);
+
+        cv::Mat mask_green;
+        cv::inRange(hsv, cv::Scalar(40, 40, 40), cv::Scalar(80, 255, 255), mask_green);
+
+        cv::Mat mask_blue;
+        cv::inRange(hsv, cv::Scalar(100, 100, 100), cv::Scalar(130, 255, 255), mask_blue);
+
+        cv::Mat mask_purple;
+        cv::inRange(hsv, cv::Scalar(120, 100, 100), cv::Scalar(150, 255, 255), mask_purple);
+        //
+        cv::Mat mask_combined;
+        cv::bitwise_or(mask_red, mask_red2, mask_combined);
+        //
+        cv::bitwise_or(mask_combined, mask_orange, mask_combined);
+        cv::bitwise_or(mask_combined, mask_yellow, mask_combined);
+        cv::bitwise_or(mask_combined, mask_green, mask_combined);
+        cv::bitwise_or(mask_combined, mask_blue, mask_combined);
+        cv::bitwise_or(mask_combined, mask_purple, mask_combined);
+        //
+
+        cv::morphologyEx(mask_combined, mask_combined, cv::MORPH_OPEN, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
+        cv::morphologyEx(mask_combined, mask_combined, cv::MORPH_CLOSE, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
 
         std::vector<std::vector<cv::Point>> contours;
-        cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+        cv::findContours(mask_combined, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
         for (size_t i = 0; i < contours.size(); i++) {
             double area = cv::contourArea(contours[i]);
